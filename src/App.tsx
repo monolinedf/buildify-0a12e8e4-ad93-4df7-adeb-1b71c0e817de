@@ -9,6 +9,13 @@ import AboutUs from "./pages/AboutUs";
 import OurPrograms from "./pages/OurPrograms";
 import OurResearch from "./pages/OurResearch";
 import Apply from "./pages/Apply";
+import Study from "./pages/Study";
+import International from "./pages/International";
+import Research from "./pages/Research";
+import CampusLife from "./pages/CampusLife";
+import Alumni from "./pages/Alumni";
+import OurUni from "./pages/OurUni";
+import QuickLinks from "./pages/QuickLinks";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -25,6 +32,13 @@ const App = () => (
           <Route path="/our-programs" element={<OurPrograms />} />
           <Route path="/our-research" element={<OurResearch />} />
           <Route path="/apply" element={<Apply />} />
+          <Route path="/study" element={<Study />} />
+          <Route path="/international" element={<International />} />
+          <Route path="/research" element={<Research />} />
+          <Route path="/campus-life" element={<CampusLife />} />
+          <Route path="/alumni" element={<Alumni />} />
+          <Route path="/our-uni" element={<OurUni />} />
+          <Route path="/quick-links" element={<QuickLinks />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

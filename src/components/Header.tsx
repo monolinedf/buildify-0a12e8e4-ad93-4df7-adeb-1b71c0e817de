@@ -1,14 +1,17 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import LogoPlaceholder from '../assets/logo-placeholder';
-import { ChevronDown, Menu, X, ArrowUp } from 'lucide-react';
+import { ChevronDown, Menu, X, ArrowUp, Search } from 'lucide-react';
 
 const Header: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [bottomDropdown, setBottomDropdown] = useState<string | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -21,6 +24,12 @@ const Header: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (searchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [searchOpen]);
+
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
@@ -32,7 +41,23 @@ const Header: React.FC = () => {
     setMobileMenuOpen(!mobileMenuOpen);
     if (!mobileMenuOpen) {
       setActiveDropdown(null);
+      setSearchOpen(false);
     }
+  };
+
+  const toggleSearch = () => {
+    setSearchOpen(!searchOpen);
+    if (mobileMenuOpen) {
+      setMobileMenuOpen(false);
+    }
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Implement search functionality
+    console.log('Searching for:', searchInputRef.current?.value);
+    // Close search after submission
+    setSearchOpen(false);
   };
 
   const handleDropdownHover = (dropdown: string) => {
@@ -41,6 +66,14 @@ const Header: React.FC = () => {
 
   const handleDropdownLeave = () => {
     setActiveDropdown(null);
+  };
+  
+  const handleBottomDropdownHover = (dropdown: string) => {
+    setBottomDropdown(dropdown);
+  };
+
+  const handleBottomDropdownLeave = () => {
+    setBottomDropdown(null);
   };
 
   const topMenuItems = [
@@ -53,10 +86,11 @@ const Header: React.FC = () => {
   ];
 
   const bottomMenuItems = [
-    { label: 'About Us', id: 'about-us' },
-    { label: 'Our Programs', id: 'our-programs' },
-    { label: 'Our Research', id: 'our-research' },
-    { label: 'Apply', id: 'apply' }
+    { label: 'About Us', id: 'about-us', hasDropdown: true },
+    { label: 'Our Programs', id: 'our-programs', hasDropdown: true },
+    { label: 'Our Research', id: 'our-research', hasDropdown: true },
+    { label: 'Apply', id: 'apply', hasDropdown: true },
+    { label: 'Quick Links', id: 'quick-links', hasDropdown: true }
   ];
 
   const dropdownContent = {
@@ -206,6 +240,15 @@ const Header: React.FC = () => {
     }
   };
 
+  // Bottom menu dropdowns
+  const bottomDropdownContent = {
+    'about-us': ['News/Blog', 'Our People'],
+    'our-programs': ['PGDip', 'Fellowships', 'Masterclasses', 'Masters'],
+    'our-research': ['Research Themes', 'Community Engagement Programs (SOILs)', 'Our Partners'],
+    'apply': ['Masterclass', 'Fellowship', 'Research Grant'],
+    'quick-links': ['Staff Portal', 'Student Portal', 'Moodle', 'Apply Now']
+  };
+
   return (
     <>
       <header className={`w-full transition-all duration-300 ${scrolled ? 'fixed top-0 z-50' : 'relative'}`}>
@@ -230,6 +273,12 @@ const Header: React.FC = () => {
                     {item.label}
                   </Link>
                 ))}
+                <button 
+                  className="text-white hover:bg-white hover:text-[#39c4f1] p-1 rounded-full transition-colors"
+                  onClick={toggleSearch}
+                >
+                  {searchOpen ? <X size={20} /> : <Search size={20} />}
+                </button>
               </nav>
               <button 
                 className="lg:hidden text-white"
@@ -243,21 +292,70 @@ const Header: React.FC = () => {
 
         {/* Second row - always visible when not scrolled */}
         {!scrolled && (
-          <div className="bg-[#219ebc] text-white py-2">
-            <div className="container mx-auto px-4">
-              <nav className="hidden lg:flex justify-center space-x-8">
-                {bottomMenuItems.map((item) => (
-                  <Link 
-                    key={item.id}
-                    to={`/${item.id}`}
-                    className="hover:text-[#082952] transition-colors py-1"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
-              </nav>
+          <>
+            {/* Search bar */}
+            {searchOpen && (
+              <div className="bg-white py-2 shadow-md">
+                <div className="container mx-auto px-4">
+                  <form onSubmit={handleSearch} className="flex items-center">
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      placeholder="Search..."
+                      className="w-full py-2 px-4 outline-none text-gray-800"
+                    />
+                    <button 
+                      type="submit"
+                      className="bg-[#219ebc] text-white p-2 rounded-r"
+                    >
+                      <Search size={20} />
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
+            
+            {/* Bottom menu */}
+            <div className="bg-[#219ebc] text-white py-2">
+              <div className="container mx-auto px-4">
+                <nav className="hidden lg:flex justify-center space-x-8">
+                  {bottomMenuItems.map((item) => (
+                    <div 
+                      key={item.id}
+                      className="relative group"
+                      onMouseEnter={() => item.hasDropdown && handleBottomDropdownHover(item.id)}
+                      onMouseLeave={handleBottomDropdownLeave}
+                    >
+                      <Link 
+                        to={`/${item.id}`}
+                        className="hover:text-[#082952] transition-colors py-1 flex items-center"
+                      >
+                        {item.label}
+                        {item.hasDropdown && <ChevronDown size={16} className="ml-1" />}
+                      </Link>
+                      
+                      {/* Dropdown for bottom menu items */}
+                      {item.hasDropdown && bottomDropdown === item.id && (
+                        <div className="absolute top-full left-0 mt-1 bg-white shadow-lg rounded-md min-w-[200px] z-50">
+                          <div className="py-2">
+                            {bottomDropdownContent[item.id as keyof typeof bottomDropdownContent].map((link, index) => (
+                              <Link 
+                                key={index}
+                                to="#"
+                                className="block px-4 py-2 text-[#219ebc] hover:bg-gray-100"
+                              >
+                                {link}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </nav>
+              </div>
             </div>
-          </div>
+          </>
         )}
 
         {/* Scrolled header - visible only when scrolled */}
@@ -281,13 +379,43 @@ const Header: React.FC = () => {
                   </Link>
                 ))}
               </nav>
-              <button 
-                className={`p-2 rounded-full transition-colors ${mobileMenuOpen ? 'bg-white text-[#39c4f1]' : 'text-white hover:bg-white hover:text-[#39c4f1]'}`}
-                onClick={toggleMobileMenu}
-              >
-                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
+              <div className="flex items-center">
+                <button 
+                  className={`p-2 rounded-full transition-colors mr-2 ${searchOpen ? 'bg-white text-[#39c4f1]' : 'text-white hover:bg-white hover:text-[#39c4f1]'}`}
+                  onClick={toggleSearch}
+                >
+                  {searchOpen ? <X size={20} /> : <Search size={20} />}
+                </button>
+                <button 
+                  className={`p-2 rounded-full transition-colors ${mobileMenuOpen ? 'bg-white text-[#39c4f1]' : 'text-white hover:bg-white hover:text-[#39c4f1]'}`}
+                  onClick={toggleMobileMenu}
+                >
+                  {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+              </div>
             </div>
+            
+            {/* Search bar when scrolled */}
+            {searchOpen && (
+              <div className="bg-white py-2 shadow-inner">
+                <div className="container mx-auto px-4">
+                  <form onSubmit={handleSearch} className="flex items-center">
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      placeholder="Search..."
+                      className="w-full py-2 px-4 outline-none text-gray-800"
+                    />
+                    <button 
+                      type="submit"
+                      className="bg-[#219ebc] text-white p-2 rounded-r"
+                    >
+                      <Search size={20} />
+                    </button>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -356,16 +484,63 @@ const Header: React.FC = () => {
         <div className="lg:hidden fixed inset-0 bg-[#082952] z-40 pt-20 overflow-y-auto">
           <div className="container mx-auto px-4 py-6">
             <div className="space-y-4">
-              {topMenuItems.concat(bottomMenuItems).map((item) => (
-                <Link 
-                  key={item.id}
-                  to={`/${item.id}`}
-                  className="block py-2 px-4 text-white hover:bg-[#219ebc] rounded"
-                  onClick={toggleMobileMenu}
-                >
-                  {item.label}
-                </Link>
+              {/* Top menu items */}
+              {topMenuItems.map((item) => (
+                <div key={item.id} className="border-b border-[#219ebc] pb-2">
+                  <Link 
+                    to={`/${item.id}`}
+                    className="block py-2 px-4 text-white hover:bg-[#219ebc] rounded"
+                    onClick={toggleMobileMenu}
+                  >
+                    {item.label}
+                  </Link>
+                </div>
               ))}
+              
+              {/* Bottom menu items with dropdowns */}
+              {bottomMenuItems.map((item) => (
+                <div key={item.id} className="border-b border-[#219ebc] pb-2">
+                  <Link 
+                    to={`/${item.id}`}
+                    className="block py-2 px-4 text-white hover:bg-[#219ebc] rounded"
+                    onClick={toggleMobileMenu}
+                  >
+                    {item.label}
+                  </Link>
+                  
+                  {item.hasDropdown && (
+                    <div className="pl-8 mt-1 space-y-1">
+                      {bottomDropdownContent[item.id as keyof typeof bottomDropdownContent].map((link, index) => (
+                        <Link 
+                          key={index}
+                          to="#"
+                          className="block py-1 px-4 text-[#219ebc] bg-white/10 rounded"
+                          onClick={toggleMobileMenu}
+                        >
+                          {link}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+              
+              {/* Search in mobile menu */}
+              <div className="mt-4">
+                <form onSubmit={handleSearch} className="flex items-center">
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="w-full py-2 px-4 outline-none text-gray-800 rounded-l"
+                  />
+                  <button 
+                    type="submit"
+                    className="bg-[#219ebc] text-white p-2 rounded-r"
+                  >
+                    <Search size={20} />
+                  </button>
+                </form>
+              </div>
             </div>
           </div>
         </div>
