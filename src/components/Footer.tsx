@@ -75,15 +75,15 @@ const Footer: React.FC = () => {
             <h3 className="text-xl font-bold mb-4">Contact</h3>
             <ul className="space-y-3">
               <li className="flex items-start">
-                <div className="text-[#39c4f1] mr-3">📍</div>
+                <div className="text-[#8ecae6] mr-3">📍</div>
                 <span className="text-gray-300">Solomon Islands National University, Kukum Campus, Honiara, Solomon Islands</span>
               </li>
               <li className="flex items-start">
-                <div className="text-[#39c4f1] mr-3">📞</div>
+                <div className="text-[#8ecae6] mr-3">📞</div>
                 <span className="text-gray-300">+677 12345678</span>
               </li>
               <li className="flex items-start">
-                <div className="text-[#39c4f1] mr-3">✉️</div>
+                <div className="text-[#8ecae6] mr-3">✉️</div>
                 <span className="text-gray-300">islandfutures@sinu.edu.sb</span>
               </li>
             </ul>

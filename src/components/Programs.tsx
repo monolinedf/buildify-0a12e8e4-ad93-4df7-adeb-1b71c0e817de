@@ -49,7 +49,7 @@ const Programs: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {programs.map((program, index) => (
             <div key={index} className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <div className="text-4xl mb-4">{program.icon}</div>
+              <div className="text-4xl mb-4 text-[#8ecae6]">{program.icon}</div>
               <h3 className="text-xl font-bold text-[#219ebc] mb-3">{program.title}</h3>
               <p className="text-gray-700">{program.description}</p>
               <a href="#" className="inline-block mt-4 text-[#39c4f1] hover:text-[#082952] font-medium">

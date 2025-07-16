@@ -84,6 +84,11 @@ const Header: React.FC = () => {
   };
 
   const handleBottomDropdownLeave = () => {
+    // We don't clear bottomDropdown here to keep the dropdown open
+    // It will be cleared when mouse leaves both the menu item and dropdown
+  };
+  
+  const handleBottomMenuAreaLeave = () => {
     setBottomDropdown(null);
   };
   
@@ -93,6 +98,11 @@ const Header: React.FC = () => {
   };
   
   const handleTopMenuLeave = () => {
+    // We don't clear topMenuHover here to keep the dropdown open
+    // It will be cleared when mouse leaves both the menu item and dropdown
+  };
+  
+  const handleTopMenuAreaLeave = () => {
     setTopMenuHover(null);
   };
 
@@ -300,13 +310,12 @@ const Header: React.FC = () => {
                 {topMenuItems.map((item) => (
                   <div 
                     key={item.id}
-                    className="relative"
+                    className={`relative ${topMenuHover === item.id ? 'text-[#39c4f1]' : ''}`}
                     onMouseEnter={() => handleTopMenuHover(item.id)}
-                    onMouseLeave={handleTopMenuLeave}
                   >
                     <Link 
                       to={`/${item.id}`}
-                      className="hover:text-[#39c4f1] transition-colors py-2 block"
+                      className={`hover:text-[#39c4f1] transition-colors py-2 block ${topMenuHover === item.id ? 'text-[#39c4f1]' : ''}`}
                     >
                       {item.label}
                     </Link>
@@ -337,7 +346,7 @@ const Header: React.FC = () => {
               <div 
                 className="absolute w-full bg-white shadow-lg z-40"
                 onMouseEnter={() => handleTopMenuHover(topMenuHover)}
-                onMouseLeave={handleTopMenuLeave}
+                onMouseLeave={handleTopMenuAreaLeave}
               >
                 <div className="container mx-auto px-4 py-6">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -416,13 +425,12 @@ const Header: React.FC = () => {
                   {bottomMenuItems.map((item) => (
                     <div 
                       key={item.id}
-                      className="relative group"
+                      className={`relative group ${bottomDropdown === item.id ? 'text-[#082952]' : ''}`}
                       onMouseEnter={() => item.hasDropdown && handleBottomDropdownHover(item.id)}
-                      onMouseLeave={handleBottomDropdownLeave}
                     >
                       <Link 
                         to={`/${item.id}`}
-                        className="hover:text-[#082952] transition-colors py-1 flex items-center"
+                        className={`hover:text-[#082952] transition-colors py-1 flex items-center ${bottomDropdown === item.id ? 'text-[#082952]' : ''}`}
                       >
                         {item.label}
                         {item.hasDropdown && <ChevronDown size={16} className="ml-1" />}
@@ -430,7 +438,11 @@ const Header: React.FC = () => {
                       
                       {/* Dropdown for bottom menu items */}
                       {item.hasDropdown && bottomDropdown === item.id && (
-                        <div className="absolute top-full left-0 mt-1 bg-white shadow-lg rounded-md min-w-[200px] z-50">
+                        <div 
+                          className="absolute top-full left-0 mt-1 bg-white shadow-lg rounded-md min-w-[200px] z-50"
+                          onMouseEnter={() => handleBottomDropdownHover(item.id)}
+                          onMouseLeave={handleBottomMenuAreaLeave}
+                        >
                           <div className="py-2">
                             {bottomDropdownContent[item.id as keyof typeof bottomDropdownContent].map((link, index) => (
                               <Link 
@@ -513,64 +525,7 @@ const Header: React.FC = () => {
           </div>
         )}
 
-        {/* Mega menu dropdown for mobile */}
-        {mobileMenuOpen && (
-          <div 
-            className="bg-[#219ebc] text-white w-full absolute z-50 shadow-lg"
-            onMouseLeave={() => setActiveDropdown(null)}
-          >
-            <div className="container mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Column 1 - Main menu items */}
-              <div className="space-y-2">
-                {topMenuItems.map((item) => (
-                  <div 
-                    key={item.id}
-                    className={`cursor-pointer p-2 rounded flex justify-between items-center ${activeDropdown === item.id ? 'bg-white text-[#39c4f1]' : 'hover:bg-white hover:text-[#39c4f1]'}`}
-                    onMouseEnter={() => handleDropdownHover(item.id)}
-                  >
-                    <span>{item.label}</span>
-                    <ChevronDown size={16} />
-                  </div>
-                ))}
-              </div>
-
-              {/* Columns 2 & 3 - Dynamic content based on active dropdown */}
-              {activeDropdown && topMenuContent[activeDropdown as keyof typeof topMenuContent] && (
-                <>
-                  <div className="bg-white p-4 rounded">
-                    <h3 className="text-[#39c4f1] font-bold mb-3">
-                      {topMenuContent[activeDropdown as keyof typeof topMenuContent].column1.heading}
-                    </h3>
-                    <ul className="space-y-2">
-                      {topMenuContent[activeDropdown as keyof typeof topMenuContent].column1.links.map((link, index) => (
-                        <li key={index}>
-                          <Link to="#" className="text-[#219ebc] hover:underline flex items-center">
-                            <span className="mr-2">•</span> {link}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="bg-white p-4 rounded">
-                    <h3 className="text-[#39c4f1] font-bold mb-3">
-                      {topMenuContent[activeDropdown as keyof typeof topMenuContent].column2.heading}
-                    </h3>
-                    <ul className="space-y-2">
-                      {topMenuContent[activeDropdown as keyof typeof topMenuContent].column2.links.map((link, index) => (
-                        <li key={index}>
-                          <Link to="#" className="text-[#219ebc] hover:underline flex items-center">
-                            <span className="mr-2">•</span> {link}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        )}
+        {/* Mega menu dropdown for mobile - REMOVED as requested */}
       </header>
 
       {/* Mobile menu */}

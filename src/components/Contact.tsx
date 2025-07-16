@@ -69,21 +69,21 @@ const Contact: React.FC = () => {
               <h3 className="text-2xl font-bold text-[#219ebc] mb-6">Contact Information</h3>
               <div className="space-y-4">
                 <div className="flex items-start">
-                  <div className="text-[#39c4f1] mr-3">📍</div>
+                  <div className="text-[#8ecae6] mr-3">📍</div>
                   <div>
                     <p className="font-medium">Address:</p>
                     <p className="text-gray-700">Solomon Islands National University, Kukum Campus, Honiara, Solomon Islands</p>
                   </div>
                 </div>
                 <div className="flex items-start">
-                  <div className="text-[#39c4f1] mr-3">📞</div>
+                  <div className="text-[#8ecae6] mr-3">📞</div>
                   <div>
                     <p className="font-medium">Phone:</p>
                     <p className="text-gray-700">+677 12345678</p>
                   </div>
                 </div>
                 <div className="flex items-start">
-                  <div className="text-[#39c4f1] mr-3">✉️</div>
+                  <div className="text-[#8ecae6] mr-3">✉️</div>
                   <div>
                     <p className="font-medium">Email:</p>
                     <p className="text-gray-700">islandfutures@sinu.edu.sb</p>
