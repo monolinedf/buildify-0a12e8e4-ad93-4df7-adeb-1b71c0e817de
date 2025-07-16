@@ -3,6 +3,14 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import LogoPlaceholder from '../assets/logo-placeholder';
 import { ChevronDown, Menu, X, ArrowUp, Search } from 'lucide-react';
+import { 
+  StudyImage, 
+  InternationalImage, 
+  ResearchImage, 
+  CampusLifeImage, 
+  AlumniImage, 
+  OurUniImage 
+} from '../assets/MenuImages';
 
 const Header: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -11,6 +19,7 @@ const Header: React.FC = () => {
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [bottomDropdown, setBottomDropdown] = useState<string | null>(null);
+  const [topMenuHover, setTopMenuHover] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -42,6 +51,7 @@ const Header: React.FC = () => {
     if (!mobileMenuOpen) {
       setActiveDropdown(null);
       setSearchOpen(false);
+      setTopMenuHover(null);
     }
   };
 
@@ -50,6 +60,7 @@ const Header: React.FC = () => {
     if (mobileMenuOpen) {
       setMobileMenuOpen(false);
     }
+    setTopMenuHover(null);
   };
 
   const handleSearch = (e: React.FormEvent) => {
@@ -75,6 +86,15 @@ const Header: React.FC = () => {
   const handleBottomDropdownLeave = () => {
     setBottomDropdown(null);
   };
+  
+  const handleTopMenuHover = (menu: string) => {
+    setTopMenuHover(menu);
+    setSearchOpen(false);
+  };
+  
+  const handleTopMenuLeave = () => {
+    setTopMenuHover(null);
+  };
 
   const topMenuItems = [
     { label: 'Study', id: 'study' },
@@ -93,9 +113,10 @@ const Header: React.FC = () => {
     { label: 'Quick Links', id: 'quick-links', hasDropdown: true }
   ];
 
-  const dropdownContent = {
+  // Top menu mega dropdowns
+  const topMenuContent = {
     'study': {
-      column2: {
+      column1: {
         heading: 'Academic Programs',
         links: [
           'Undergraduate Programs',
@@ -106,7 +127,7 @@ const Header: React.FC = () => {
           'Short Courses'
         ]
       },
-      column3: {
+      column2: {
         heading: 'Academic Resources',
         links: [
           'Schools and Faculties',
@@ -116,10 +137,12 @@ const Header: React.FC = () => {
           'Scholarships',
           'ICT Services'
         ]
-      }
+      },
+      image: <StudyImage />,
+      caption: 'Empowering students through quality education and innovative learning experiences'
     },
     'international': {
-      column2: {
+      column1: {
         heading: 'International Students',
         links: [
           'Admission Requirements',
@@ -130,7 +153,7 @@ const Header: React.FC = () => {
           'International Student Support'
         ]
       },
-      column3: {
+      column2: {
         heading: 'Global Initiatives',
         links: [
           'Exchange Programs',
@@ -140,10 +163,12 @@ const Header: React.FC = () => {
           'Global Research Collaborations',
           'International Events'
         ]
-      }
+      },
+      image: <InternationalImage />,
+      caption: 'Building global connections and fostering cultural exchange'
     },
     'research': {
-      column2: {
+      column1: {
         heading: 'Research Areas',
         links: [
           'Marine Science & Conservation',
@@ -154,7 +179,7 @@ const Header: React.FC = () => {
           'Renewable Energy'
         ]
       },
-      column3: {
+      column2: {
         heading: 'Research Resources',
         links: [
           'Research Centers & Institutes',
@@ -164,10 +189,12 @@ const Header: React.FC = () => {
           'Research Partnerships',
           'Research Seminars'
         ]
-      }
+      },
+      image: <ResearchImage />,
+      caption: 'Advancing knowledge through innovative research and collaboration'
     },
     'campus-life': {
-      column2: {
+      column1: {
         heading: 'Student Experience',
         links: [
           'Student Clubs & Organizations',
@@ -178,7 +205,7 @@ const Header: React.FC = () => {
           'Campus Events'
         ]
       },
-      column3: {
+      column2: {
         heading: 'Campus Resources',
         links: [
           'Campus Accommodation',
@@ -188,10 +215,12 @@ const Header: React.FC = () => {
           'Technology Services',
           'Campus Map'
         ]
-      }
+      },
+      image: <CampusLifeImage />,
+      caption: 'Creating vibrant campus experiences and fostering student community'
     },
     'alumni': {
-      column2: {
+      column1: {
         heading: 'Alumni Network',
         links: [
           'Alumni Association',
@@ -202,7 +231,7 @@ const Header: React.FC = () => {
           'Alumni Magazine'
         ]
       },
-      column3: {
+      column2: {
         heading: 'Get Involved',
         links: [
           'Alumni Events',
@@ -212,10 +241,12 @@ const Header: React.FC = () => {
           'Career Network',
           'Regional Chapters'
         ]
-      }
+      },
+      image: <AlumniImage />,
+      caption: 'Connecting graduates and building lifelong relationships with SINU'
     },
     'our-uni': {
-      column2: {
+      column1: {
         heading: 'Our University',
         links: [
           'Mission & Vision',
@@ -226,7 +257,7 @@ const Header: React.FC = () => {
           'Policies & Procedures'
         ]
       },
-      column3: {
+      column2: {
         heading: 'Connect with SINU',
         links: [
           'News & Media',
@@ -236,7 +267,9 @@ const Header: React.FC = () => {
           'Contact Us',
           'Campus Locations'
         ]
-      }
+      },
+      image: <OurUniImage />,
+      caption: 'Shaping the future of education in the Solomon Islands'
     }
   };
 
@@ -265,13 +298,19 @@ const Header: React.FC = () => {
               </div>
               <nav className="hidden lg:flex space-x-6">
                 {topMenuItems.map((item) => (
-                  <Link 
+                  <div 
                     key={item.id}
-                    to={`/${item.id}`}
-                    className="hover:text-[#39c4f1] transition-colors"
+                    className="relative"
+                    onMouseEnter={() => handleTopMenuHover(item.id)}
+                    onMouseLeave={handleTopMenuLeave}
                   >
-                    {item.label}
-                  </Link>
+                    <Link 
+                      to={`/${item.id}`}
+                      className="hover:text-[#39c4f1] transition-colors py-2 block"
+                    >
+                      {item.label}
+                    </Link>
+                  </div>
                 ))}
                 <button 
                   className="text-white hover:bg-white hover:text-[#39c4f1] p-1 rounded-full transition-colors"
@@ -293,6 +332,61 @@ const Header: React.FC = () => {
         {/* Second row - always visible when not scrolled */}
         {!scrolled && (
           <>
+            {/* Top menu mega dropdown */}
+            {topMenuHover && (
+              <div 
+                className="absolute w-full bg-white shadow-lg z-40"
+                onMouseEnter={() => handleTopMenuHover(topMenuHover)}
+                onMouseLeave={handleTopMenuLeave}
+              >
+                <div className="container mx-auto px-4 py-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    {/* Column 1 */}
+                    <div>
+                      <h3 className="text-[#39c4f1] font-bold text-lg mb-4">
+                        {topMenuContent[topMenuHover as keyof typeof topMenuContent].column1.heading}
+                      </h3>
+                      <ul className="space-y-2">
+                        {topMenuContent[topMenuHover as keyof typeof topMenuContent].column1.links.map((link, index) => (
+                          <li key={index}>
+                            <Link to="#" className="text-[#219ebc] hover:underline flex items-center">
+                              <span className="mr-2">•</span> {link}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    {/* Column 2 */}
+                    <div>
+                      <h3 className="text-[#39c4f1] font-bold text-lg mb-4">
+                        {topMenuContent[topMenuHover as keyof typeof topMenuContent].column2.heading}
+                      </h3>
+                      <ul className="space-y-2">
+                        {topMenuContent[topMenuHover as keyof typeof topMenuContent].column2.links.map((link, index) => (
+                          <li key={index}>
+                            <Link to="#" className="text-[#219ebc] hover:underline flex items-center">
+                              <span className="mr-2">•</span> {link}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    
+                    {/* Column 3 - Image */}
+                    <div className="flex flex-col items-center">
+                      <div className="rounded-lg overflow-hidden shadow-md w-full">
+                        {topMenuContent[topMenuHover as keyof typeof topMenuContent].image}
+                      </div>
+                      <p className="text-center text-gray-600 mt-3 italic">
+                        {topMenuContent[topMenuHover as keyof typeof topMenuContent].caption}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             {/* Search bar */}
             {searchOpen && (
               <div className="bg-white py-2 shadow-md">
@@ -419,7 +513,7 @@ const Header: React.FC = () => {
           </div>
         )}
 
-        {/* Mega menu dropdown */}
+        {/* Mega menu dropdown for mobile */}
         {mobileMenuOpen && (
           <div 
             className="bg-[#219ebc] text-white w-full absolute z-50 shadow-lg"
@@ -441,14 +535,14 @@ const Header: React.FC = () => {
               </div>
 
               {/* Columns 2 & 3 - Dynamic content based on active dropdown */}
-              {activeDropdown && dropdownContent[activeDropdown as keyof typeof dropdownContent] && (
+              {activeDropdown && topMenuContent[activeDropdown as keyof typeof topMenuContent] && (
                 <>
                   <div className="bg-white p-4 rounded">
                     <h3 className="text-[#39c4f1] font-bold mb-3">
-                      {dropdownContent[activeDropdown as keyof typeof dropdownContent].column2.heading}
+                      {topMenuContent[activeDropdown as keyof typeof topMenuContent].column1.heading}
                     </h3>
                     <ul className="space-y-2">
-                      {dropdownContent[activeDropdown as keyof typeof dropdownContent].column2.links.map((link, index) => (
+                      {topMenuContent[activeDropdown as keyof typeof topMenuContent].column1.links.map((link, index) => (
                         <li key={index}>
                           <Link to="#" className="text-[#219ebc] hover:underline flex items-center">
                             <span className="mr-2">•</span> {link}
@@ -460,10 +554,10 @@ const Header: React.FC = () => {
 
                   <div className="bg-white p-4 rounded">
                     <h3 className="text-[#39c4f1] font-bold mb-3">
-                      {dropdownContent[activeDropdown as keyof typeof dropdownContent].column3.heading}
+                      {topMenuContent[activeDropdown as keyof typeof topMenuContent].column2.heading}
                     </h3>
                     <ul className="space-y-2">
-                      {dropdownContent[activeDropdown as keyof typeof dropdownContent].column3.links.map((link, index) => (
+                      {topMenuContent[activeDropdown as keyof typeof topMenuContent].column2.links.map((link, index) => (
                         <li key={index}>
                           <Link to="#" className="text-[#219ebc] hover:underline flex items-center">
                             <span className="mr-2">•</span> {link}
