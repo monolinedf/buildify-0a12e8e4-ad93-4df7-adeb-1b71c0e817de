@@ -23,6 +23,7 @@ const Header: React.FC = () => {
   const [scrolledMenuOpen, setScrolledMenuOpen] = useState(false);
   const [scrolledDropdown, setScrolledDropdown] = useState<string | null>(null);
   const [bottomMenuClicked, setBottomMenuClicked] = useState<string | null>(null);
+  const [mobileActiveMenu, setMobileActiveMenu] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -55,6 +56,7 @@ const Header: React.FC = () => {
       setActiveDropdown(null);
       setSearchOpen(false);
       setTopMenuHover(null);
+      setMobileActiveMenu(null);
     }
   };
 
@@ -340,9 +342,11 @@ const Header: React.FC = () => {
         {!scrolled && (
           <div className="bg-[#082952] text-white py-3">
             <div className="container mx-auto px-4 flex justify-between items-center">
-              <div className="flex items-center">
-                <LogoPlaceholder className="h-16 w-auto mr-4" />
-                <div>
+              <div className="flex items-center justify-center lg:justify-start">
+                <div className="absolute left-4 top-0 bg-white rounded-full shadow-lg p-2 z-10 hidden lg:block" style={{ height: '100px', width: '100px' }}>
+                  <LogoPlaceholder className="h-full w-full rounded-full" />
+                </div>
+                <div className="lg:ml-28 text-center lg:text-left">
                   <h1 className="text-2xl font-bold">Center for Island Futures</h1>
                   <p className="text-[#219ebc]">Solomon Islands National University</p>
                 </div>
@@ -369,12 +373,20 @@ const Header: React.FC = () => {
                   {searchOpen ? <X size={20} /> : <Search size={20} />}
                 </button>
               </nav>
-              <button 
-                className="lg:hidden text-white"
-                onClick={toggleMobileMenu}
-              >
-                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </button>
+              <div className="flex items-center">
+                <button 
+                  className="text-white hover:bg-white hover:text-[#39c4f1] p-1 rounded-full transition-colors mr-2"
+                  onClick={toggleSearch}
+                >
+                  {searchOpen ? <X size={20} /> : <Search size={20} />}
+                </button>
+                <button 
+                  className="text-white"
+                  onClick={toggleMobileMenu}
+                >
+                  {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -471,20 +483,13 @@ const Header: React.FC = () => {
                       onMouseLeave={handleBottomDropdownLeave}
                     >
                       <div className="flex items-center">
-                        <Link 
-                          to={`/${item.id}`}
+                        <button 
+                          onClick={() => handleBottomMenuClick(item.id)}
                           className={`hover:text-[#082952] transition-colors py-1 ${bottomDropdown === item.id ? 'text-[#082952]' : ''}`}
                         >
                           {item.label}
-                        </Link>
-                        {item.hasDropdown && (
-                          <button 
-                            onClick={() => handleBottomMenuClick(item.id)}
-                            className="ml-1 p-1 hover:text-[#082952]"
-                          >
-                            <ChevronDown size={16} />
-                          </button>
-                        )}
+                          {item.hasDropdown && <ChevronDown size={16} className="ml-1" />}
+                        </button>
                       </div>
                       
                       {/* Dropdown for bottom menu items */}
@@ -533,13 +538,13 @@ const Header: React.FC = () => {
                     onMouseEnter={() => item.hasDropdown && handleScrolledDropdownHover(item.id)}
                     onMouseLeave={handleScrolledDropdownLeave}
                   >
-                    <Link 
-                      to={`/${item.id}`}
+                    <button 
                       className="hover:bg-white hover:text-[#39c4f1] transition-colors py-1 px-3 rounded flex items-center"
+                      onClick={() => item.hasDropdown && handleScrolledDropdownHover(item.id)}
                     >
                       {item.label}
                       {item.hasDropdown && <ChevronDown size={16} className="ml-1" />}
-                    </Link>
+                    </button>
                     
                     {/* Dropdown for scrolled menu items */}
                     {item.hasDropdown && scrolledDropdown === item.id && (
@@ -678,31 +683,66 @@ const Header: React.FC = () => {
       {/* Mobile menu - only for mobile devices */}
       {mobileMenuOpen && !scrolled && (
         <div className="lg:hidden fixed inset-0 bg-[#082952] z-40 pt-20 overflow-y-auto">
-          <div className="container mx-auto px-4 py-6">
-            <div className="space-y-4">
+          <div className="container mx-auto px-4 py-6 relative">
+            <button 
+              className="absolute top-0 right-4 text-white hover:text-[#219ebc] transition-colors"
+              onClick={toggleMobileMenu}
+            >
+              <X size={24} />
+            </button>
+            
+            <div className="space-y-4 mt-6">
               {/* Top menu items */}
               {topMenuItems.map((item) => (
                 <div key={item.id} className="border-b border-[#219ebc] pb-2">
-                  <Link 
-                    to={`/${item.id}`}
-                    className="block py-2 px-4 text-white hover:bg-[#219ebc] rounded"
-                    onClick={toggleMobileMenu}
+                  <button 
+                    className="w-full text-left py-2 px-4 text-white hover:bg-[#219ebc] rounded flex justify-between items-center"
+                    onClick={() => {
+                      if (mobileActiveMenu === item.id) {
+                        setMobileActiveMenu(null);
+                      } else {
+                        setMobileActiveMenu(item.id);
+                      }
+                    }}
                   >
-                    {item.label}
-                  </Link>
+                    <span>{item.label}</span>
+                    <ChevronDown size={16} className={`transition-transform ${mobileActiveMenu === item.id ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  {mobileActiveMenu === item.id && (
+                    <div className="pl-8 mt-1 space-y-1 relative">
+                      <button 
+                        className="absolute top-0 right-4 text-white hover:text-[#219ebc] transition-colors"
+                        onClick={() => setMobileActiveMenu(null)}
+                      >
+                        <X size={16} />
+                      </button>
+                      
+                      {topMenuContent[item.id as keyof typeof topMenuContent].column1.links.concat(
+                        topMenuContent[item.id as keyof typeof topMenuContent].column2.links
+                      ).map((link, index) => (
+                        <Link 
+                          key={index}
+                          to="#"
+                          className="block py-1 px-4 text-white hover:bg-[#219ebc] rounded"
+                          onClick={toggleMobileMenu}
+                        >
+                          {link}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
               
               {/* Bottom menu items with dropdowns */}
               {bottomMenuItems.map((item) => (
                 <div key={item.id} className="border-b border-[#219ebc] pb-2">
-                  <Link 
-                    to={`/${item.id}`}
-                    className="block py-2 px-4 text-white hover:bg-[#219ebc] rounded"
-                    onClick={toggleMobileMenu}
+                  <div 
+                    className="block py-2 px-4 text-white font-medium"
                   >
                     {item.label}
-                  </Link>
+                  </div>
                   
                   {item.hasDropdown && (
                     <div className="pl-8 mt-1 space-y-1">
@@ -710,7 +750,7 @@ const Header: React.FC = () => {
                         <Link 
                           key={index}
                           to="#"
-                          className="block py-1 px-4 text-[#219ebc] bg-white/10 rounded"
+                          className="block py-1 px-4 text-[#219ebc] hover:bg-[#219ebc] hover:text-white rounded transition-colors"
                           onClick={toggleMobileMenu}
                         >
                           {link}
@@ -745,26 +785,74 @@ const Header: React.FC = () => {
       {/* Mobile menu when scrolled - only for mobile devices */}
       {mobileMenuOpen && scrolled && (
         <div className="lg:hidden fixed inset-0 bg-[#082952] z-40 pt-20 overflow-y-auto">
-          <div className="container mx-auto px-4 py-6">
-            <div className="space-y-4">
-              {/* Combined menu items for scrolled mobile view */}
-              {[...topMenuItems, ...bottomMenuItems].map((item) => (
+          <div className="container mx-auto px-4 py-6 relative">
+            <button 
+              className="absolute top-0 right-4 text-white hover:text-[#219ebc] transition-colors"
+              onClick={toggleMobileMenu}
+            >
+              <X size={24} />
+            </button>
+            
+            <div className="space-y-4 mt-6">
+              {/* Top menu items */}
+              {topMenuItems.map((item) => (
                 <div key={item.id} className="border-b border-[#219ebc] pb-2">
-                  <Link 
-                    to={`/${item.id}`}
-                    className="block py-2 px-4 text-white hover:bg-[#219ebc] rounded"
-                    onClick={toggleMobileMenu}
+                  <button 
+                    className="w-full text-left py-2 px-4 text-white hover:bg-[#219ebc] rounded flex justify-between items-center"
+                    onClick={() => {
+                      if (mobileActiveMenu === item.id) {
+                        setMobileActiveMenu(null);
+                      } else {
+                        setMobileActiveMenu(item.id);
+                      }
+                    }}
+                  >
+                    <span>{item.label}</span>
+                    <ChevronDown size={16} className={`transition-transform ${mobileActiveMenu === item.id ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  {mobileActiveMenu === item.id && (
+                    <div className="pl-8 mt-1 space-y-1 relative">
+                      <button 
+                        className="absolute top-0 right-4 text-white hover:text-[#219ebc] transition-colors"
+                        onClick={() => setMobileActiveMenu(null)}
+                      >
+                        <X size={16} />
+                      </button>
+                      
+                      {topMenuContent[item.id as keyof typeof topMenuContent].column1.links.concat(
+                        topMenuContent[item.id as keyof typeof topMenuContent].column2.links
+                      ).map((link, index) => (
+                        <Link 
+                          key={index}
+                          to="#"
+                          className="block py-1 px-4 text-white hover:bg-[#219ebc] rounded"
+                          onClick={toggleMobileMenu}
+                        >
+                          {link}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+              
+              {/* Bottom menu items with dropdowns */}
+              {bottomMenuItems.map((item) => (
+                <div key={item.id} className="border-b border-[#219ebc] pb-2">
+                  <div 
+                    className="block py-2 px-4 text-white font-medium"
                   >
                     {item.label}
-                  </Link>
+                  </div>
                   
-                  {'hasDropdown' in item && item.hasDropdown && (
+                  {item.hasDropdown && (
                     <div className="pl-8 mt-1 space-y-1">
                       {bottomDropdownContent[item.id as keyof typeof bottomDropdownContent].map((link, index) => (
                         <Link 
                           key={index}
                           to="#"
-                          className="block py-1 px-4 text-[#219ebc] bg-white/10 rounded"
+                          className="block py-1 px-4 text-[#219ebc] hover:bg-[#219ebc] hover:text-white rounded transition-colors"
                           onClick={toggleMobileMenu}
                         >
                           {link}
