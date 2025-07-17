@@ -20,6 +20,7 @@ const Header: React.FC = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [bottomDropdown, setBottomDropdown] = useState<string | null>(null);
   const [topMenuHover, setTopMenuHover] = useState<string | null>(null);
+  const [scrolledMenuOpen, setScrolledMenuOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -55,10 +56,20 @@ const Header: React.FC = () => {
     }
   };
 
+  const toggleScrolledMenu = () => {
+    setScrolledMenuOpen(!scrolledMenuOpen);
+    if (searchOpen) {
+      setSearchOpen(false);
+    }
+  };
+
   const toggleSearch = () => {
     setSearchOpen(!searchOpen);
     if (mobileMenuOpen) {
       setMobileMenuOpen(false);
+    }
+    if (scrolledMenuOpen) {
+      setScrolledMenuOpen(false);
     }
     setTopMenuHover(null);
   };
@@ -76,6 +87,19 @@ const Header: React.FC = () => {
   };
 
   const handleDropdownLeave = () => {
+    setActiveDropdown(null);
+  };
+  
+  const handleScrolledDropdownHover = (dropdown: string) => {
+    setActiveDropdown(dropdown);
+  };
+  
+  const handleScrolledDropdownLeave = () => {
+    // We don't clear activeDropdown here to keep the dropdown open
+    // It will be cleared when mouse leaves both the menu item and dropdown
+  };
+  
+  const handleScrolledMenuAreaLeave = () => {
     setActiveDropdown(null);
   };
   
@@ -332,7 +356,7 @@ const Header: React.FC = () => {
                 className="lg:hidden text-white"
                 onClick={toggleMobileMenu}
               >
-                <Menu size={24} />
+                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
               </button>
             </div>
           </div>
@@ -493,7 +517,13 @@ const Header: React.FC = () => {
                   {searchOpen ? <X size={20} /> : <Search size={20} />}
                 </button>
                 <button 
-                  className={`p-2 rounded-full transition-colors ${mobileMenuOpen ? 'bg-white text-[#39c4f1]' : 'text-white hover:bg-white hover:text-[#39c4f1]'}`}
+                  className={`hidden lg:block p-2 rounded-full transition-colors ${scrolledMenuOpen ? 'bg-white text-[#39c4f1]' : 'text-white hover:bg-white hover:text-[#39c4f1]'}`}
+                  onClick={toggleScrolledMenu}
+                >
+                  {scrolledMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                </button>
+                <button 
+                  className={`lg:hidden p-2 rounded-full transition-colors ${mobileMenuOpen ? 'bg-white text-[#39c4f1]' : 'text-white hover:bg-white hover:text-[#39c4f1]'}`}
                   onClick={toggleMobileMenu}
                 >
                   {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -522,13 +552,75 @@ const Header: React.FC = () => {
                 </div>
               </div>
             )}
+            
+            {/* Scrolled mega menu dropdown */}
+            {scrolledMenuOpen && (
+              <div 
+                className="bg-[#219ebc] text-white w-full absolute z-50 shadow-lg"
+                onMouseLeave={() => {
+                  setScrolledMenuOpen(false);
+                  setActiveDropdown(null);
+                }}
+              >
+                <div className="container mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {/* Column 1 - Main menu items */}
+                  <div className="space-y-2">
+                    {topMenuItems.map((item) => (
+                      <div 
+                        key={item.id}
+                        className={`cursor-pointer p-2 rounded flex justify-between items-center ${activeDropdown === item.id ? 'bg-white text-[#39c4f1]' : 'hover:bg-white hover:text-[#39c4f1]'}`}
+                        onMouseEnter={() => handleScrolledDropdownHover(item.id)}
+                      >
+                        <span>{item.label}</span>
+                        <ChevronDown size={16} />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Columns 2 & 3 - Dynamic content based on active dropdown */}
+                  {activeDropdown && topMenuContent[activeDropdown as keyof typeof topMenuContent] && (
+                    <>
+                      <div className="bg-white p-4 rounded">
+                        <h3 className="text-[#39c4f1] font-bold mb-3">
+                          {topMenuContent[activeDropdown as keyof typeof topMenuContent].column1.heading}
+                        </h3>
+                        <ul className="space-y-2">
+                          {topMenuContent[activeDropdown as keyof typeof topMenuContent].column1.links.map((link, index) => (
+                            <li key={index}>
+                              <Link to="#" className="text-[#219ebc] hover:underline flex items-center">
+                                <span className="mr-2">•</span> {link}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <div className="bg-white p-4 rounded">
+                        <h3 className="text-[#39c4f1] font-bold mb-3">
+                          {topMenuContent[activeDropdown as keyof typeof topMenuContent].column2.heading}
+                        </h3>
+                        <ul className="space-y-2">
+                          {topMenuContent[activeDropdown as keyof typeof topMenuContent].column2.links.map((link, index) => (
+                            <li key={index}>
+                              <Link to="#" className="text-[#219ebc] hover:underline flex items-center">
+                                <span className="mr-2">•</span> {link}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
         {/* Mega menu dropdown for mobile - REMOVED as requested */}
       </header>
 
-      {/* Mobile menu */}
+      {/* Mobile menu - only for mobile devices */}
       {mobileMenuOpen && !scrolled && (
         <div className="lg:hidden fixed inset-0 bg-[#082952] z-40 pt-20 overflow-y-auto">
           <div className="container mx-auto px-4 py-6">
@@ -558,6 +650,60 @@ const Header: React.FC = () => {
                   </Link>
                   
                   {item.hasDropdown && (
+                    <div className="pl-8 mt-1 space-y-1">
+                      {bottomDropdownContent[item.id as keyof typeof bottomDropdownContent].map((link, index) => (
+                        <Link 
+                          key={index}
+                          to="#"
+                          className="block py-1 px-4 text-[#219ebc] bg-white/10 rounded"
+                          onClick={toggleMobileMenu}
+                        >
+                          {link}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+              
+              {/* Search in mobile menu */}
+              <div className="mt-4">
+                <form onSubmit={handleSearch} className="flex items-center">
+                  <input
+                    type="text"
+                    placeholder="Search..."
+                    className="w-full py-2 px-4 outline-none text-gray-800 rounded-l"
+                  />
+                  <button 
+                    type="submit"
+                    className="bg-[#219ebc] text-white p-2 rounded-r"
+                  >
+                    <Search size={20} />
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Mobile menu when scrolled - only for mobile devices */}
+      {mobileMenuOpen && scrolled && (
+        <div className="lg:hidden fixed inset-0 bg-[#082952] z-40 pt-20 overflow-y-auto">
+          <div className="container mx-auto px-4 py-6">
+            <div className="space-y-4">
+              {/* Combined menu items for scrolled mobile view */}
+              {[...topMenuItems, ...bottomMenuItems].map((item) => (
+                <div key={item.id} className="border-b border-[#219ebc] pb-2">
+                  <Link 
+                    to={`/${item.id}`}
+                    className="block py-2 px-4 text-white hover:bg-[#219ebc] rounded"
+                    onClick={toggleMobileMenu}
+                  >
+                    {item.label}
+                  </Link>
+                  
+                  {'hasDropdown' in item && item.hasDropdown && (
                     <div className="pl-8 mt-1 space-y-1">
                       {bottomDropdownContent[item.id as keyof typeof bottomDropdownContent].map((link, index) => (
                         <Link 
