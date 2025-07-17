@@ -373,7 +373,7 @@ const Header: React.FC = () => {
                   {searchOpen ? <X size={20} /> : <Search size={20} />}
                 </button>
               </nav>
-              <div className="flex items-center">
+              <div className="flex items-center lg:hidden">
                 <button 
                   className="text-white hover:bg-white hover:text-[#39c4f1] p-1 rounded-full transition-colors mr-2"
                   onClick={toggleSearch}
