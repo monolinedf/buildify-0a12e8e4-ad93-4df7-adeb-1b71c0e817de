@@ -21,6 +21,8 @@ const Header: React.FC = () => {
   const [bottomDropdown, setBottomDropdown] = useState<string | null>(null);
   const [topMenuHover, setTopMenuHover] = useState<string | null>(null);
   const [scrolledMenuOpen, setScrolledMenuOpen] = useState(false);
+  const [scrolledDropdown, setScrolledDropdown] = useState<string | null>(null);
+  const [bottomMenuClicked, setBottomMenuClicked] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -92,6 +94,7 @@ const Header: React.FC = () => {
   
   const handleScrolledDropdownHover = (dropdown: string) => {
     setActiveDropdown(dropdown);
+    setScrolledDropdown(dropdown);
   };
   
   const handleScrolledDropdownLeave = () => {
@@ -101,10 +104,13 @@ const Header: React.FC = () => {
   
   const handleScrolledMenuAreaLeave = () => {
     setActiveDropdown(null);
+    setScrolledDropdown(null);
   };
   
   const handleBottomDropdownHover = (dropdown: string) => {
-    setBottomDropdown(dropdown);
+    if (bottomMenuClicked === dropdown) {
+      setBottomDropdown(dropdown);
+    }
   };
 
   const handleBottomDropdownLeave = () => {
@@ -114,6 +120,17 @@ const Header: React.FC = () => {
   
   const handleBottomMenuAreaLeave = () => {
     setBottomDropdown(null);
+    setBottomMenuClicked(null);
+  };
+  
+  const handleBottomMenuClick = (dropdown: string) => {
+    if (bottomMenuClicked === dropdown) {
+      setBottomMenuClicked(null);
+      setBottomDropdown(null);
+    } else {
+      setBottomMenuClicked(dropdown);
+      setBottomDropdown(dropdown);
+    }
   };
   
   const handleTopMenuHover = (menu: string) => {
@@ -451,14 +468,24 @@ const Header: React.FC = () => {
                       key={item.id}
                       className={`relative group ${bottomDropdown === item.id ? 'text-[#082952]' : ''}`}
                       onMouseEnter={() => item.hasDropdown && handleBottomDropdownHover(item.id)}
+                      onMouseLeave={handleBottomDropdownLeave}
                     >
-                      <Link 
-                        to={`/${item.id}`}
-                        className={`hover:text-[#082952] transition-colors py-1 flex items-center ${bottomDropdown === item.id ? 'text-[#082952]' : ''}`}
-                      >
-                        {item.label}
-                        {item.hasDropdown && <ChevronDown size={16} className="ml-1" />}
-                      </Link>
+                      <div className="flex items-center">
+                        <Link 
+                          to={`/${item.id}`}
+                          className={`hover:text-[#082952] transition-colors py-1 ${bottomDropdown === item.id ? 'text-[#082952]' : ''}`}
+                        >
+                          {item.label}
+                        </Link>
+                        {item.hasDropdown && (
+                          <button 
+                            onClick={() => handleBottomMenuClick(item.id)}
+                            className="ml-1 p-1 hover:text-[#082952]"
+                          >
+                            <ChevronDown size={16} />
+                          </button>
+                        )}
+                      </div>
                       
                       {/* Dropdown for bottom menu items */}
                       {item.hasDropdown && bottomDropdown === item.id && (
@@ -500,13 +527,41 @@ const Header: React.FC = () => {
               </div>
               <nav className="hidden lg:flex space-x-6">
                 {bottomMenuItems.map((item) => (
-                  <Link 
+                  <div
                     key={item.id}
-                    to={`/${item.id}`}
-                    className="hover:bg-white hover:text-[#39c4f1] transition-colors py-1 px-3 rounded"
+                    className="relative"
+                    onMouseEnter={() => item.hasDropdown && handleScrolledDropdownHover(item.id)}
+                    onMouseLeave={handleScrolledDropdownLeave}
                   >
-                    {item.label}
-                  </Link>
+                    <Link 
+                      to={`/${item.id}`}
+                      className="hover:bg-white hover:text-[#39c4f1] transition-colors py-1 px-3 rounded flex items-center"
+                    >
+                      {item.label}
+                      {item.hasDropdown && <ChevronDown size={16} className="ml-1" />}
+                    </Link>
+                    
+                    {/* Dropdown for scrolled menu items */}
+                    {item.hasDropdown && scrolledDropdown === item.id && (
+                      <div 
+                        className="absolute top-full left-0 mt-1 bg-[#082952] shadow-lg rounded-md min-w-[200px] z-50"
+                        onMouseEnter={() => handleScrolledDropdownHover(item.id)}
+                        onMouseLeave={handleScrolledMenuAreaLeave}
+                      >
+                        <div className="py-2">
+                          {bottomDropdownContent[item.id as keyof typeof bottomDropdownContent].map((link, index) => (
+                            <Link 
+                              key={index}
+                              to="#"
+                              className="block px-4 py-2 text-white hover:bg-white hover:text-[#082952] transition-colors"
+                            >
+                              {link}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 ))}
               </nav>
               <div className="flex items-center">
