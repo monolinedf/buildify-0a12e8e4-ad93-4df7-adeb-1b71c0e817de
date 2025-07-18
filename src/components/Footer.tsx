@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import LogoPlaceholder from '../assets/logo-placeholder';
+import { MapPin, Phone, Mail } from 'lucide-react';
 
 const Footer: React.FC = () => {
   return (
@@ -75,15 +76,21 @@ const Footer: React.FC = () => {
             <h3 className="text-xl font-bold mb-4">Contact</h3>
             <ul className="space-y-3">
               <li className="flex items-start">
-                <div className="text-[#8ecae6] mr-3">📍</div>
+                <div className="text-[#219ebc] mr-3">
+                  <MapPin size={20} />
+                </div>
                 <span className="text-gray-300">Solomon Islands National University, Kukum Campus, Honiara, Solomon Islands</span>
               </li>
               <li className="flex items-start">
-                <div className="text-[#8ecae6] mr-3">📞</div>
+                <div className="text-[#219ebc] mr-3">
+                  <Phone size={20} />
+                </div>
                 <span className="text-gray-300">+677 12345678</span>
               </li>
               <li className="flex items-start">
-                <div className="text-[#8ecae6] mr-3">✉️</div>
+                <div className="text-[#219ebc] mr-3">
+                  <Mail size={20} />
+                </div>
                 <span className="text-gray-300">islandfutures@sinu.edu.sb</span>
               </li>
             </ul>
@@ -92,9 +99,14 @@ const Footer: React.FC = () => {
         
         <div className="border-t border-gray-700 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm mb-4 md:mb-0">
-              © {new Date().getFullYear()} Center for Island Futures, Solomon Islands National University. All rights reserved.
-            </p>
+            <div className="flex flex-col md:flex-row items-center md:items-start">
+              <p className="text-gray-400 text-sm mb-2 md:mb-0 md:mr-4">
+                © {new Date().getFullYear()} Center for Island Futures, Solomon Islands National University. All rights reserved.
+              </p>
+              <p className="text-gray-400 text-sm hidden md:block">
+                Designed by Dean Foy
+              </p>
+            </div>
             <div className="flex space-x-6">
               <Link to="/privacy-policy" className="text-gray-400 text-sm hover:text-[#39c4f1]">Privacy Policy</Link>
               <Link to="/terms-of-use" className="text-gray-400 text-sm hover:text-[#39c4f1]">Terms of Use</Link>
