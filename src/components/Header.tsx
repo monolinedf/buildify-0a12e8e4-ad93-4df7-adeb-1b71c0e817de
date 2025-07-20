@@ -343,13 +343,17 @@ const Header: React.FC = () => {
           <div className="bg-[#082952] text-white py-3">
             <div className="container mx-auto px-4 flex justify-between items-center">
               <div className="flex items-center justify-center lg:justify-start">
-                <div className="absolute left-4 top-0 rounded-full shadow-lg z-10 hidden lg:flex items-center justify-center bg-transparent" style={{ height: '110px', width: '110px', overflow: 'hidden', padding: '5px' }}>
+                <Link 
+                  to="/" 
+                  className="absolute left-4 top-0 rounded-full shadow-lg z-10 hidden lg:flex items-center justify-center bg-transparent cursor-pointer transition-transform hover:scale-105" 
+                  style={{ height: '110px', width: '110px', overflow: 'hidden', padding: '5px' }}
+                >
                   <img 
                     src={cifLogo} 
                     alt="Center for Island Futures Logo" 
                     className="max-h-full max-w-full object-contain"
                   />
-                </div>
+                </Link>
                 <div className="lg:ml-28 text-center lg:text-left">
                   <h1 className="text-2xl font-bold">Center for Island Futures</h1>
                   <p className="text-[#219ebc]">Solomon Islands National University</p>
