@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import LogoPlaceholder from '../assets/logo-placeholder';
 import { MapPin, Phone, Mail } from 'lucide-react';
+import cifLogo from '../assets/ciflogo_1.png';
 
 const Footer: React.FC = () => {
   return (
@@ -11,7 +11,13 @@ const Footer: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
           <div>
             <div className="flex items-center mb-4">
-              <LogoPlaceholder className="h-12 w-auto mr-3" />
+              <div className="w-16 h-16 flex items-center justify-center mr-3 overflow-hidden">
+                <img 
+                  src={cifLogo} 
+                  alt="Center for Island Futures Logo" 
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
               <div>
                 <h3 className="text-lg font-bold">Center for Island Futures</h3>
                 <p className="text-sm text-[#219ebc]">Solomon Islands National University</p>

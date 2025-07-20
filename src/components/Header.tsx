@@ -1,7 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import LogoPlaceholder from '../assets/logo-placeholder';
 import { ChevronDown, Menu, X, ArrowUp, Search } from 'lucide-react';
 import { 
   StudyImage, 
@@ -11,6 +10,7 @@ import {
   AlumniImage, 
   OurUniImage 
 } from '../assets/MenuImages';
+import cifLogo from '../assets/ciflogo_1.png';
 
 const Header: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -343,8 +343,12 @@ const Header: React.FC = () => {
           <div className="bg-[#082952] text-white py-3">
             <div className="container mx-auto px-4 flex justify-between items-center">
               <div className="flex items-center justify-center lg:justify-start">
-                <div className="absolute left-4 top-0 bg-white rounded-full shadow-lg p-2 z-10 hidden lg:block" style={{ height: '100px', width: '100px' }}>
-                  <LogoPlaceholder className="h-full w-full rounded-full" />
+                <div className="absolute left-4 top-0 bg-white rounded-full shadow-lg z-10 hidden lg:flex items-center justify-center" style={{ height: '110px', width: '110px', overflow: 'hidden', padding: '5px' }}>
+                  <img 
+                    src={cifLogo} 
+                    alt="Center for Island Futures Logo" 
+                    className="max-h-full max-w-full object-contain"
+                  />
                 </div>
                 <div className="lg:ml-28 text-center lg:text-left">
                   <h1 className="text-2xl font-bold">Center for Island Futures</h1>
