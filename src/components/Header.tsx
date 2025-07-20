@@ -493,7 +493,7 @@ const Header: React.FC = () => {
                       <div className="flex items-center">
                         <button 
                           onClick={() => handleBottomMenuClick(item.id)}
-                          className={`hover:text-[#082952] transition-colors py-1 ${bottomDropdown === item.id ? 'text-[#082952]' : ''}`}
+                          className={`hover:text-[#082952] transition-colors py-1 flex items-center ${bottomDropdown === item.id ? 'text-[#082952]' : ''}`}
                         >
                           {item.label}
                           {item.hasDropdown && <ChevronDown size={16} className="ml-1" />}
