@@ -343,7 +343,7 @@ const Header: React.FC = () => {
           <div className="bg-[#082952] text-white py-3">
             <div className="container mx-auto px-4 flex justify-between items-center">
               <div className="flex items-center justify-center lg:justify-start">
-                <div className="absolute left-4 top-0 bg-white rounded-full shadow-lg z-10 hidden lg:flex items-center justify-center" style={{ height: '110px', width: '110px', overflow: 'hidden', padding: '5px' }}>
+                <div className="absolute left-4 top-0 rounded-full shadow-lg z-10 hidden lg:flex items-center justify-center bg-transparent" style={{ height: '110px', width: '110px', overflow: 'hidden', padding: '5px' }}>
                   <img 
                     src={cifLogo} 
                     alt="Center for Island Futures Logo" 
